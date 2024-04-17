@@ -124,7 +124,7 @@ public class Calculator {
     }
 
     public Fraction getResult(String expression) throws Exception {
-        return FractionOperation.reduction(result(polishReverseRecord(getTokens(expression))));
+        return result(polishReverseRecord(getTokens(expression)));
     }
 }
 

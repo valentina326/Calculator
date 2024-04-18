@@ -1,8 +1,9 @@
-public class Fraction {
+import java.util.ArrayList;
+import java.util.List;
 
+public class Fraction {
     private int numerator;
     private int denominator;
-    private int wholePart;
 
     public Fraction(int numerator, int denominator) throws Exception {
         this.numerator = numerator;
@@ -11,6 +12,7 @@ public class Fraction {
         } else {
             this.denominator = denominator;
         }
+        reduction();
     }
 
     public Fraction(int numerator) {
@@ -18,14 +20,8 @@ public class Fraction {
         this.denominator = 1;
     }
 
-    public Fraction(int wholePart, int numerator, int denominator) {
-        this.numerator = numerator;
-        this.denominator = denominator;
-        this.wholePart = wholePart;
-    }
-
     public int getDenominator() {
-        return denominator;
+        return this.denominator;
     }
 
     public void setDenominator(int denominator) {
@@ -33,56 +29,92 @@ public class Fraction {
     }
 
     public int getNumerator() {
-        return numerator;
+        return this.numerator;
     }
 
     public void setNumerator(int numerator) {
         this.numerator = numerator;
     }
 
-    public int getWholePart() {
-        return wholePart;
-    }
-
-    public void setWholePart(int wholePart) {
-        this.wholePart = wholePart;
-    }
-
-    public String toString() {
-        return numerator + "/" + denominator;
-    }
-
     public static boolean isFraction(String expression) {
-        return expression.contains("/");
+        return !expression.equals("/") && expression.contains("/");
     }
 
     public static Fraction parseFraction(String expression) throws Exception {
-        String symbol = String.valueOf(expression.charAt(0));
-        Fraction fraction = new Fraction(1, 1);
-        if (isFraction(expression)) {
-            for (int i = 0; i < expression.length(); i++) {
-                StringBuilder concatenationNumberNum = new StringBuilder(symbol);
-                while (!String.valueOf(expression.charAt(i + 1)).equals("/")) {
-                    symbol = String.valueOf(expression.charAt(i + 1));
-                    concatenationNumberNum.append(symbol);
-                    i++;
-                }
-                fraction.setNumerator(Integer.parseInt(String.valueOf(concatenationNumberNum)));
-                if (i < expression.length() - 1 && String.valueOf(expression.charAt(i + 1)).equals("/")) {
-                    i += 1;
-                    StringBuilder concatenationNumberDen = new StringBuilder();
-                    while (i < expression.length() - 1) {
-                        symbol = String.valueOf(expression.charAt(i + 1));
-                        concatenationNumberDen.append(symbol);
-                        i++;
-                    }
-                    fraction.setDenominator(Integer.parseInt(String.valueOf(concatenationNumberDen)));
+        if (!isFraction(expression)) return null;
+
+        expression = expression.replaceAll(" ", ""); // remove all spaces 3 4/5 -> 34/5
+        String[] values = expression.split("/"); // value[0] = numerator, value[1] = denominator
+
+        try { // check if we have two correct integer values, so we don't have any * or another illegal symbols here
+            return new Fraction(Integer.parseInt(values[0]), Integer.parseInt(values[1]));
+        } catch (NumberFormatException var3) {
+            return null;
+        }
+    }
+
+    public void reduction() {
+        List<Integer> numeratorSimpleNumbers = getSimpleNumbers(this.getNumerator());
+        List<Integer> denominatorSimpleNumbers = getSimpleNumbers(this.getDenominator());
+
+        int nsd = findNSD(numeratorSimpleNumbers, denominatorSimpleNumbers);
+        this.setNumerator(this.getNumerator() / nsd);
+        this.setDenominator(this.getDenominator() / nsd);
+    }
+
+    private static List<Integer> getSimpleNumbers(int number) {
+        List<Integer> simpleNumbers = new ArrayList<>();
+
+        for (int i = 2; i <= number; i++) {
+            if (number % i == 0) {
+                simpleNumbers.add(i);
+                number /= i;
+                i = 1;
+            }
+
+            if (number == 1) break;
+        }
+
+        return simpleNumbers;
+    }
+
+    private static List<Integer> findSameSimpleNumbers(List<Integer> numeratorSimpleNumbers,
+                                                       List<Integer> denominatorSimpleNumbers) {
+        List<Integer> sameSimpleNumbers = new ArrayList<>();
+        int numeratorSimpleNumber, denominatorSimpleNumber;
+
+        for (Integer simpleNumber : numeratorSimpleNumbers) {
+            numeratorSimpleNumber = simpleNumber;
+
+            for (int j = 0; j < denominatorSimpleNumbers.size(); j++) {
+                denominatorSimpleNumber = denominatorSimpleNumbers.get(j);
+
+                if (numeratorSimpleNumber == denominatorSimpleNumber) {
+                    sameSimpleNumbers.add(denominatorSimpleNumber);
+                    denominatorSimpleNumbers.remove(j);
+                    break;
                 }
             }
-        } else {
-            fraction.setNumerator(Integer.parseInt(symbol));
-            fraction.setDenominator(1);
         }
-        return fraction;
+
+        return sameSimpleNumbers;
+    }
+
+    private static int findNSD(List<Integer> numeratorSimpleNumbers, List<Integer> denominatorSimpleNumbers) {
+        return findNSD(findSameSimpleNumbers(numeratorSimpleNumbers, denominatorSimpleNumbers));
+    }
+
+    private static int findNSD(List<Integer> items) {
+        int nsd = 1;
+        for (Integer item : items) {
+            nsd *= item;
+        }
+
+        return nsd;
+    }
+
+    @Override
+    public String toString() {
+        return this.numerator + "/" + this.denominator;
     }
 }

@@ -37,7 +37,7 @@ public class Fraction {
     }
 
     public static boolean isFraction(String expression) {
-        return expression.contains("/");
+        return !expression.equals("/") && expression.contains("/");
     }
 
     public static Fraction parseFraction(String expression) throws Exception {

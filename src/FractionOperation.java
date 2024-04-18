@@ -14,10 +14,11 @@ public class FractionOperation {
 
     public static Fraction addition(Fraction firstFraction, Fraction secondFraction) throws Exception {
         HashMap<String, Integer> map = new HashMap<>(getComponentsFraction(firstFraction, secondFraction));
-        int numerator;
-        int denominator;
+        int numerator, denominator;
+
         if (!Objects.equals(map.get("denFirstFraction"), map.get("denSecondFraction"))) {
-            numerator = (map.get("numSecondFraction") * map.get("denFirstFraction")) + (map.get("numFirstFraction") * map.get("denSecondFraction"));
+            numerator = map.get("numSecondFraction") * map.get("denFirstFraction") +
+                    map.get("numFirstFraction") * map.get("denSecondFraction");
             denominator = map.get("denFirstFraction") * map.get("denSecondFraction");
         } else {
             numerator = map.get("numFirstFraction") + map.get("numSecondFraction");
@@ -28,10 +29,11 @@ public class FractionOperation {
 
     public static Fraction subtraction(Fraction firstFraction, Fraction secondFraction) throws Exception {
         HashMap<String, Integer> map = new HashMap<>(getComponentsFraction(firstFraction, secondFraction));
-        int numerator;
-        int denominator;
+        int numerator, denominator;
+
         if (!Objects.equals(map.get("denFirstFraction"), map.get("denSecondFraction"))) {
-            numerator = map.get("numFirstFraction") * map.get("denSecondFraction") - map.get("numSecondFraction") * map.get("denFirstFraction");
+            numerator = map.get("numFirstFraction") * map.get("denSecondFraction")
+                    - map.get("numSecondFraction") * map.get("denFirstFraction");
             denominator = map.get("denFirstFraction") * map.get("denSecondFraction");
         } else {
             numerator = map.get("numFirstFraction") - map.get("denSecondFraction");

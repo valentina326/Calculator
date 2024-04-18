@@ -12,7 +12,6 @@ public class Fraction {
         } else {
             this.denominator = denominator;
         }
-
         reduction();
     }
 
